@@ -1,0 +1,2161 @@
+{
+  "source_manifest": {
+    "olist_customers_dataset.csv": {
+      "rows": 99441,
+      "bytes": 9033957,
+      "sha256": "983a422239e1712ded753b3bf9ecf47dc73f144d306029dcfa99e70a226883d2"
+    },
+    "olist_orders_dataset.csv": {
+      "rows": 99441,
+      "bytes": 17654914,
+      "sha256": "8df58ef3d2d7e9944010f7beecd9b75367f5588ec6e3c91cec19ae3345ef9ecf"
+    },
+    "olist_order_items_dataset.csv": {
+      "rows": 112650,
+      "bytes": 15438671,
+      "sha256": "0bc4d068c4fe38cbb01bd90e8746e3c613fe7b4baef75fab7b0e329701c3e279"
+    },
+    "olist_order_payments_dataset.csv": {
+      "rows": 103886,
+      "bytes": 5777138,
+      "sha256": "4f713964f2815dbbaa40b9488268c55aac3627bfce5aa96cf58d1f3616de3cc0"
+    },
+    "olist_order_reviews_dataset.csv": {
+      "rows": 99224,
+      "bytes": 14451670,
+      "sha256": "012b61c7593e34f51fa614efdf802b9c7056ce6aae5307ddb93236e7cfc797d7"
+    },
+    "olist_products_dataset.csv": {
+      "rows": 32951,
+      "bytes": 2379446,
+      "sha256": "3e6569628a17fbc75fd206ee357b59e20364b9afa90f5b6cd5b4d624c58aa9cc"
+    },
+    "olist_sellers_dataset.csv": {
+      "rows": 3095,
+      "bytes": 174703,
+      "sha256": "1f643d2b950373b85735e7794b20986f528d7a000432e7c6f9bcbb44d0846a0e"
+    },
+    "product_category_name_translation.csv": {
+      "rows": 71,
+      "bytes": 2613,
+      "sha256": "a81f0d1f27b27e7293f761bc79e3ce8f348ee39c4b3ed3e49bde38f478586278"
+    }
+  },
+  "sql_files": {
+    "00_schema.sql": "c5fdd762dcf179562ae07e6af594d06b85dacecedf841dc5d033c152b42ddec6",
+    "01_load.sql": "0f780ee7d8d4b8a4858d125c8c095a98ff226232bd43c5dc3716c265be48e0d4",
+    "02_views.sql": "b737a716a29ab696fee1bb94454ab038ed70fa4557ae304956f3e16441b9595a",
+    "03_analysis.sql": "b88144f305df99f0ec16eec86baa1b9ecda77b32e9252a3b1fa5c1192407bc51",
+    "04_data_quality.sql": "1f846675ec32755b4f31dd44dcea30c59b44bd88b3ed9c4bdcb5f28912d0c624",
+    "run.sql": "d6d96b8d5916219de57fdaf9f03160230624551e9c3842dd8bfe833c8ff7125a"
+  },
+  "queries": [
+    {
+      "id": "Q01",
+      "question": "What scale, order value and delivery coverage does the sample represent?",
+      "sql_sha256": "a1c466968e663e7e096d6b446856f62e01bc6b40a79d5542831de4c8f9999504",
+      "columns": [
+        "total_orders",
+        "unique_customers",
+        "delivered_orders",
+        "delivered_item_gmv",
+        "average_delivered_order_gmv",
+        "delivered_orders_with_items",
+        "delivery_date_eligible_orders",
+        "late_orders",
+        "late_delivery_pct",
+        "mean_delivery_days"
+      ],
+      "rows": [
+        {
+          "total_orders": "99441",
+          "unique_customers": "96096",
+          "delivered_orders": "96478",
+          "delivered_item_gmv": "13221498.11",
+          "average_delivered_order_gmv": "137.04",
+          "delivered_orders_with_items": "96478",
+          "delivery_date_eligible_orders": "96470",
+          "late_orders": "6534",
+          "late_delivery_pct": "6.77",
+          "mean_delivery_days": "12.50"
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "question": "Which order statuses are present, and what share do they represent?",
+      "sql_sha256": "96a9405475d7a1f080bb41fecce6d09083b4300ea6803197796b88881c2ec7bb",
+      "columns": [
+        "order_status",
+        "orders",
+        "order_share_pct"
+      ],
+      "rows": [
+        {
+          "order_status": "delivered",
+          "orders": "96478",
+          "order_share_pct": "97.02"
+        },
+        {
+          "order_status": "shipped",
+          "orders": "1107",
+          "order_share_pct": "1.11"
+        },
+        {
+          "order_status": "canceled",
+          "orders": "625",
+          "order_share_pct": "0.63"
+        },
+        {
+          "order_status": "unavailable",
+          "orders": "609",
+          "order_share_pct": "0.61"
+        },
+        {
+          "order_status": "invoiced",
+          "orders": "314",
+          "order_share_pct": "0.32"
+        },
+        {
+          "order_status": "processing",
+          "orders": "301",
+          "order_share_pct": "0.30"
+        },
+        {
+          "order_status": "created",
+          "orders": "5",
+          "order_share_pct": "0.01"
+        },
+        {
+          "order_status": "approved",
+          "orders": "2",
+          "order_share_pct": "0.00"
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "question": "How do delivered merchandise value and order counts change monthly?",
+      "sql_sha256": "49915be7710135e0828ce3922a7d5b45e527d2192381cf6f829fb4590dd1da2d",
+      "columns": [
+        "month",
+        "boundary_month",
+        "orders",
+        "delivered_orders",
+        "delivered_item_gmv",
+        "mom_gmv_growth_pct",
+        "yoy_gmv_growth_pct"
+      ],
+      "rows": [
+        {
+          "month": "2016-09-01",
+          "boundary_month": "t",
+          "orders": "4",
+          "delivered_orders": "1",
+          "delivered_item_gmv": "134.97",
+          "mom_gmv_growth_pct": "",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2016-10-01",
+          "boundary_month": "f",
+          "orders": "324",
+          "delivered_orders": "265",
+          "delivered_item_gmv": "40325.11",
+          "mom_gmv_growth_pct": "29777.09",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2016-11-01",
+          "boundary_month": "f",
+          "orders": "0",
+          "delivered_orders": "0",
+          "delivered_item_gmv": "0",
+          "mom_gmv_growth_pct": "-100.00",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2016-12-01",
+          "boundary_month": "f",
+          "orders": "1",
+          "delivered_orders": "1",
+          "delivered_item_gmv": "10.90",
+          "mom_gmv_growth_pct": "",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-01-01",
+          "boundary_month": "f",
+          "orders": "800",
+          "delivered_orders": "750",
+          "delivered_item_gmv": "111798.36",
+          "mom_gmv_growth_pct": "1025573.03",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-02-01",
+          "boundary_month": "f",
+          "orders": "1780",
+          "delivered_orders": "1653",
+          "delivered_item_gmv": "234223.40",
+          "mom_gmv_growth_pct": "109.51",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-03-01",
+          "boundary_month": "f",
+          "orders": "2682",
+          "delivered_orders": "2546",
+          "delivered_item_gmv": "359198.85",
+          "mom_gmv_growth_pct": "53.36",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-04-01",
+          "boundary_month": "f",
+          "orders": "2404",
+          "delivered_orders": "2303",
+          "delivered_item_gmv": "340669.68",
+          "mom_gmv_growth_pct": "-5.16",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-05-01",
+          "boundary_month": "f",
+          "orders": "3700",
+          "delivered_orders": "3546",
+          "delivered_item_gmv": "489338.25",
+          "mom_gmv_growth_pct": "43.64",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-06-01",
+          "boundary_month": "f",
+          "orders": "3245",
+          "delivered_orders": "3135",
+          "delivered_item_gmv": "421923.37",
+          "mom_gmv_growth_pct": "-13.78",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-07-01",
+          "boundary_month": "f",
+          "orders": "4026",
+          "delivered_orders": "3872",
+          "delivered_item_gmv": "481604.52",
+          "mom_gmv_growth_pct": "14.15",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-08-01",
+          "boundary_month": "f",
+          "orders": "4331",
+          "delivered_orders": "4193",
+          "delivered_item_gmv": "554699.70",
+          "mom_gmv_growth_pct": "15.18",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-09-01",
+          "boundary_month": "f",
+          "orders": "4285",
+          "delivered_orders": "4150",
+          "delivered_item_gmv": "607399.67",
+          "mom_gmv_growth_pct": "9.50",
+          "yoy_gmv_growth_pct": "449925.69"
+        },
+        {
+          "month": "2017-10-01",
+          "boundary_month": "f",
+          "orders": "4631",
+          "delivered_orders": "4478",
+          "delivered_item_gmv": "648247.65",
+          "mom_gmv_growth_pct": "6.73",
+          "yoy_gmv_growth_pct": "1507.55"
+        },
+        {
+          "month": "2017-11-01",
+          "boundary_month": "f",
+          "orders": "7544",
+          "delivered_orders": "7289",
+          "delivered_item_gmv": "987765.37",
+          "mom_gmv_growth_pct": "52.37",
+          "yoy_gmv_growth_pct": ""
+        },
+        {
+          "month": "2017-12-01",
+          "boundary_month": "f",
+          "orders": "5673",
+          "delivered_orders": "5513",
+          "delivered_item_gmv": "726033.19",
+          "mom_gmv_growth_pct": "-26.50",
+          "yoy_gmv_growth_pct": "6660754.95"
+        },
+        {
+          "month": "2018-01-01",
+          "boundary_month": "f",
+          "orders": "7269",
+          "delivered_orders": "7069",
+          "delivered_item_gmv": "924645.00",
+          "mom_gmv_growth_pct": "27.36",
+          "yoy_gmv_growth_pct": "727.06"
+        },
+        {
+          "month": "2018-02-01",
+          "boundary_month": "f",
+          "orders": "6728",
+          "delivered_orders": "6555",
+          "delivered_item_gmv": "826437.13",
+          "mom_gmv_growth_pct": "-10.62",
+          "yoy_gmv_growth_pct": "252.84"
+        },
+        {
+          "month": "2018-03-01",
+          "boundary_month": "f",
+          "orders": "7211",
+          "delivered_orders": "7003",
+          "delivered_item_gmv": "953356.25",
+          "mom_gmv_growth_pct": "15.36",
+          "yoy_gmv_growth_pct": "165.41"
+        },
+        {
+          "month": "2018-04-01",
+          "boundary_month": "f",
+          "orders": "6939",
+          "delivered_orders": "6798",
+          "delivered_item_gmv": "973534.09",
+          "mom_gmv_growth_pct": "2.12",
+          "yoy_gmv_growth_pct": "185.77"
+        },
+        {
+          "month": "2018-05-01",
+          "boundary_month": "f",
+          "orders": "6873",
+          "delivered_orders": "6749",
+          "delivered_item_gmv": "977544.69",
+          "mom_gmv_growth_pct": "0.41",
+          "yoy_gmv_growth_pct": "99.77"
+        },
+        {
+          "month": "2018-06-01",
+          "boundary_month": "f",
+          "orders": "6167",
+          "delivered_orders": "6099",
+          "delivered_item_gmv": "856077.86",
+          "mom_gmv_growth_pct": "-12.43",
+          "yoy_gmv_growth_pct": "102.90"
+        },
+        {
+          "month": "2018-07-01",
+          "boundary_month": "f",
+          "orders": "6292",
+          "delivered_orders": "6159",
+          "delivered_item_gmv": "867953.46",
+          "mom_gmv_growth_pct": "1.39",
+          "yoy_gmv_growth_pct": "80.22"
+        },
+        {
+          "month": "2018-08-01",
+          "boundary_month": "f",
+          "orders": "6512",
+          "delivered_orders": "6351",
+          "delivered_item_gmv": "838576.64",
+          "mom_gmv_growth_pct": "-3.38",
+          "yoy_gmv_growth_pct": "51.18"
+        },
+        {
+          "month": "2018-09-01",
+          "boundary_month": "f",
+          "orders": "16",
+          "delivered_orders": "0",
+          "delivered_item_gmv": "0",
+          "mom_gmv_growth_pct": "-100.00",
+          "yoy_gmv_growth_pct": "-100.00"
+        },
+        {
+          "month": "2018-10-01",
+          "boundary_month": "t",
+          "orders": "4",
+          "delivered_orders": "0",
+          "delivered_item_gmv": "0",
+          "mom_gmv_growth_pct": "",
+          "yoy_gmv_growth_pct": "-100.00"
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "question": "Which customer states contribute delivered orders and merchandise value?",
+      "sql_sha256": "a864968d059440e5e91237b8dddf55ebfe8b25c5e2ec6d31bf89d67addea99f6",
+      "columns": [
+        "customer_state",
+        "delivered_orders",
+        "unique_customers",
+        "delivered_item_gmv",
+        "gmv_share_pct",
+        "mean_delivery_days",
+        "eligible_deliveries",
+        "late_delivery_pct"
+      ],
+      "rows": [
+        {
+          "customer_state": "SP",
+          "delivered_orders": "40501",
+          "unique_customers": "39156",
+          "delivered_item_gmv": "5067633.16",
+          "gmv_share_pct": "38.33",
+          "mean_delivery_days": "8.70",
+          "eligible_deliveries": "40494",
+          "late_delivery_pct": "4.49"
+        },
+        {
+          "customer_state": "RJ",
+          "delivered_orders": "12350",
+          "unique_customers": "11917",
+          "delivered_item_gmv": "1759651.13",
+          "gmv_share_pct": "13.31",
+          "mean_delivery_days": "15.24",
+          "eligible_deliveries": "12350",
+          "late_delivery_pct": "12.11"
+        },
+        {
+          "customer_state": "MG",
+          "delivered_orders": "11354",
+          "unique_customers": "11001",
+          "delivered_item_gmv": "1552481.83",
+          "gmv_share_pct": "11.74",
+          "mean_delivery_days": "11.94",
+          "eligible_deliveries": "11354",
+          "late_delivery_pct": "4.57"
+        },
+        {
+          "customer_state": "RS",
+          "delivered_orders": "5345",
+          "unique_customers": "5168",
+          "delivered_item_gmv": "728897.47",
+          "gmv_share_pct": "5.51",
+          "mean_delivery_days": "15.25",
+          "eligible_deliveries": "5344",
+          "late_delivery_pct": "6.08"
+        },
+        {
+          "customer_state": "PR",
+          "delivered_orders": "4923",
+          "unique_customers": "4769",
+          "delivered_item_gmv": "666063.51",
+          "gmv_share_pct": "5.04",
+          "mean_delivery_days": "11.94",
+          "eligible_deliveries": "4923",
+          "late_delivery_pct": "4.04"
+        },
+        {
+          "customer_state": "SC",
+          "delivered_orders": "3546",
+          "unique_customers": "3449",
+          "delivered_item_gmv": "507012.13",
+          "gmv_share_pct": "3.83",
+          "mean_delivery_days": "14.90",
+          "eligible_deliveries": "3546",
+          "late_delivery_pct": "8.21"
+        },
+        {
+          "customer_state": "BA",
+          "delivered_orders": "3256",
+          "unique_customers": "3158",
+          "delivered_item_gmv": "493584.14",
+          "gmv_share_pct": "3.73",
+          "mean_delivery_days": "19.28",
+          "eligible_deliveries": "3256",
+          "late_delivery_pct": "12.16"
+        },
+        {
+          "customer_state": "DF",
+          "delivered_orders": "2080",
+          "unique_customers": "2019",
+          "delivered_item_gmv": "296498.41",
+          "gmv_share_pct": "2.24",
+          "mean_delivery_days": "12.90",
+          "eligible_deliveries": "2080",
+          "late_delivery_pct": "5.67"
+        },
+        {
+          "customer_state": "GO",
+          "delivered_orders": "1957",
+          "unique_customers": "1895",
+          "delivered_item_gmv": "282836.70",
+          "gmv_share_pct": "2.14",
+          "mean_delivery_days": "15.54",
+          "eligible_deliveries": "1957",
+          "late_delivery_pct": "6.54"
+        },
+        {
+          "customer_state": "ES",
+          "delivered_orders": "1995",
+          "unique_customers": "1928",
+          "delivered_item_gmv": "268643.45",
+          "gmv_share_pct": "2.03",
+          "mean_delivery_days": "15.72",
+          "eligible_deliveries": "1995",
+          "late_delivery_pct": "10.73"
+        },
+        {
+          "customer_state": "PE",
+          "delivered_orders": "1593",
+          "unique_customers": "1551",
+          "delivered_item_gmv": "251889.49",
+          "gmv_share_pct": "1.91",
+          "mean_delivery_days": "18.40",
+          "eligible_deliveries": "1593",
+          "late_delivery_pct": "9.60"
+        },
+        {
+          "customer_state": "CE",
+          "delivered_orders": "1279",
+          "unique_customers": "1258",
+          "delivered_item_gmv": "219757.38",
+          "gmv_share_pct": "1.66",
+          "mean_delivery_days": "21.20",
+          "eligible_deliveries": "1279",
+          "late_delivery_pct": "13.76"
+        },
+        {
+          "customer_state": "PA",
+          "delivered_orders": "946",
+          "unique_customers": "922",
+          "delivered_item_gmv": "174470.59",
+          "gmv_share_pct": "1.32",
+          "mean_delivery_days": "23.73",
+          "eligible_deliveries": "946",
+          "late_delivery_pct": "11.21"
+        },
+        {
+          "customer_state": "MT",
+          "delivered_orders": "886",
+          "unique_customers": "856",
+          "delivered_item_gmv": "152191.62",
+          "gmv_share_pct": "1.15",
+          "mean_delivery_days": "18.00",
+          "eligible_deliveries": "886",
+          "late_delivery_pct": "5.98"
+        },
+        {
+          "customer_state": "MA",
+          "delivered_orders": "717",
+          "unique_customers": "700",
+          "delivered_item_gmv": "117009.38",
+          "gmv_share_pct": "0.88",
+          "mean_delivery_days": "21.51",
+          "eligible_deliveries": "717",
+          "late_delivery_pct": "17.43"
+        },
+        {
+          "customer_state": "MS",
+          "delivered_orders": "701",
+          "unique_customers": "681",
+          "delivered_item_gmv": "115429.97",
+          "gmv_share_pct": "0.87",
+          "mean_delivery_days": "15.54",
+          "eligible_deliveries": "701",
+          "late_delivery_pct": "9.70"
+        },
+        {
+          "customer_state": "PB",
+          "delivered_orders": "517",
+          "unique_customers": "504",
+          "delivered_item_gmv": "112586.82",
+          "gmv_share_pct": "0.85",
+          "mean_delivery_days": "20.39",
+          "eligible_deliveries": "517",
+          "late_delivery_pct": "10.44"
+        },
+        {
+          "customer_state": "PI",
+          "delivered_orders": "476",
+          "unique_customers": "464",
+          "delivered_item_gmv": "84721.00",
+          "gmv_share_pct": "0.64",
+          "mean_delivery_days": "19.39",
+          "eligible_deliveries": "476",
+          "late_delivery_pct": "13.87"
+        },
+        {
+          "customer_state": "RN",
+          "delivered_orders": "474",
+          "unique_customers": "464",
+          "delivered_item_gmv": "82105.66",
+          "gmv_share_pct": "0.62",
+          "mean_delivery_days": "19.22",
+          "eligible_deliveries": "474",
+          "late_delivery_pct": "9.28"
+        },
+        {
+          "customer_state": "AL",
+          "delivered_orders": "397",
+          "unique_customers": "387",
+          "delivered_item_gmv": "78855.72",
+          "gmv_share_pct": "0.60",
+          "mean_delivery_days": "24.50",
+          "eligible_deliveries": "397",
+          "late_delivery_pct": "21.41"
+        },
+        {
+          "customer_state": "SE",
+          "delivered_orders": "335",
+          "unique_customers": "329",
+          "delivered_item_gmv": "56574.19",
+          "gmv_share_pct": "0.43",
+          "mean_delivery_days": "21.46",
+          "eligible_deliveries": "335",
+          "late_delivery_pct": "15.22"
+        },
+        {
+          "customer_state": "TO",
+          "delivered_orders": "274",
+          "unique_customers": "267",
+          "delivered_item_gmv": "48402.51",
+          "gmv_share_pct": "0.37",
+          "mean_delivery_days": "17.60",
+          "eligible_deliveries": "274",
+          "late_delivery_pct": "9.85"
+        },
+        {
+          "customer_state": "RO",
+          "delivered_orders": "243",
+          "unique_customers": "231",
+          "delivered_item_gmv": "45682.76",
+          "gmv_share_pct": "0.35",
+          "mean_delivery_days": "19.28",
+          "eligible_deliveries": "243",
+          "late_delivery_pct": "2.88"
+        },
+        {
+          "customer_state": "AM",
+          "delivered_orders": "145",
+          "unique_customers": "140",
+          "delivered_item_gmv": "22155.84",
+          "gmv_share_pct": "0.17",
+          "mean_delivery_days": "26.36",
+          "eligible_deliveries": "145",
+          "late_delivery_pct": "2.76"
+        },
+        {
+          "customer_state": "AC",
+          "delivered_orders": "80",
+          "unique_customers": "76",
+          "delivered_item_gmv": "15930.97",
+          "gmv_share_pct": "0.12",
+          "mean_delivery_days": "21.00",
+          "eligible_deliveries": "80",
+          "late_delivery_pct": "3.75"
+        },
+        {
+          "customer_state": "AP",
+          "delivered_orders": "67",
+          "unique_customers": "66",
+          "delivered_item_gmv": "13374.81",
+          "gmv_share_pct": "0.10",
+          "mean_delivery_days": "27.18",
+          "eligible_deliveries": "67",
+          "late_delivery_pct": "2.99"
+        },
+        {
+          "customer_state": "RR",
+          "delivered_orders": "41",
+          "unique_customers": "40",
+          "delivered_item_gmv": "7057.47",
+          "gmv_share_pct": "0.05",
+          "mean_delivery_days": "29.34",
+          "eligible_deliveries": "41",
+          "late_delivery_pct": "12.20"
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "question": "Which product categories contribute the most delivered merchandise value?",
+      "sql_sha256": "5161ed82310ee1d11e95a1b6d850c2ba493d88015a6249b8e436af3bee495c08",
+      "columns": [
+        "category",
+        "items",
+        "delivered_orders",
+        "delivered_item_gmv",
+        "recorded_freight",
+        "gmv_share_pct"
+      ],
+      "rows": [
+        {
+          "category": "health_beauty",
+          "items": "9465",
+          "delivered_orders": "8647",
+          "delivered_item_gmv": "1233131.72",
+          "recorded_freight": "178957.81",
+          "gmv_share_pct": "9.33"
+        },
+        {
+          "category": "watches_gifts",
+          "items": "5859",
+          "delivered_orders": "5495",
+          "delivered_item_gmv": "1166176.98",
+          "recorded_freight": "98156.14",
+          "gmv_share_pct": "8.82"
+        },
+        {
+          "category": "bed_bath_table",
+          "items": "10953",
+          "delivered_orders": "9272",
+          "delivered_item_gmv": "1023434.76",
+          "recorded_freight": "201774.50",
+          "gmv_share_pct": "7.74"
+        },
+        {
+          "category": "sports_leisure",
+          "items": "8431",
+          "delivered_orders": "7530",
+          "delivered_item_gmv": "954852.55",
+          "recorded_freight": "163404.36",
+          "gmv_share_pct": "7.22"
+        },
+        {
+          "category": "computers_accessories",
+          "items": "7644",
+          "delivered_orders": "6530",
+          "delivered_item_gmv": "888724.61",
+          "recorded_freight": "143999.16",
+          "gmv_share_pct": "6.72"
+        },
+        {
+          "category": "furniture_decor",
+          "items": "8160",
+          "delivered_orders": "6307",
+          "delivered_item_gmv": "711927.69",
+          "recorded_freight": "168402.23",
+          "gmv_share_pct": "5.38"
+        },
+        {
+          "category": "housewares",
+          "items": "6795",
+          "delivered_orders": "5743",
+          "delivered_item_gmv": "615628.69",
+          "recorded_freight": "142763.56",
+          "gmv_share_pct": "4.66"
+        },
+        {
+          "category": "cool_stuff",
+          "items": "3718",
+          "delivered_orders": "3559",
+          "delivered_item_gmv": "610204.10",
+          "recorded_freight": "81476.79",
+          "gmv_share_pct": "4.62"
+        },
+        {
+          "category": "auto",
+          "items": "4140",
+          "delivered_orders": "3810",
+          "delivered_item_gmv": "578966.65",
+          "recorded_freight": "90488.10",
+          "gmv_share_pct": "4.38"
+        },
+        {
+          "category": "toys",
+          "items": "4030",
+          "delivered_orders": "3804",
+          "delivered_item_gmv": "471286.48",
+          "recorded_freight": "75774.58",
+          "gmv_share_pct": "3.56"
+        },
+        {
+          "category": "garden_tools",
+          "items": "4268",
+          "delivered_orders": "3448",
+          "delivered_item_gmv": "470495.28",
+          "recorded_freight": "96650.40",
+          "gmv_share_pct": "3.56"
+        },
+        {
+          "category": "baby",
+          "items": "2982",
+          "delivered_orders": "2809",
+          "delivered_item_gmv": "400421.84",
+          "recorded_freight": "66305.81",
+          "gmv_share_pct": "3.03"
+        },
+        {
+          "category": "perfumery",
+          "items": "3340",
+          "delivered_orders": "3086",
+          "delivered_item_gmv": "390144.65",
+          "recorded_freight": "53026.98",
+          "gmv_share_pct": "2.95"
+        },
+        {
+          "category": "telephony",
+          "items": "4430",
+          "delivered_orders": "4093",
+          "delivered_item_gmv": "309860.23",
+          "recorded_freight": "69342.39",
+          "gmv_share_pct": "2.34"
+        },
+        {
+          "category": "office_furniture",
+          "items": "1668",
+          "delivered_orders": "1254",
+          "delivered_item_gmv": "268154.31",
+          "recorded_freight": "67057.05",
+          "gmv_share_pct": "2.03"
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "question": "Which states have high late-delivery rates with at least 100 eligible orders?",
+      "sql_sha256": "f82aeb84cc3d53ba0a5924f2e231177409286c983c28f0b518dd4e4c61d3d8c2",
+      "columns": [
+        "customer_state",
+        "eligible_deliveries",
+        "late_orders",
+        "late_delivery_pct",
+        "mean_delivery_days",
+        "median_delivery_days",
+        "p90_delivery_days"
+      ],
+      "rows": [
+        {
+          "customer_state": "AL",
+          "eligible_deliveries": "397",
+          "late_orders": "85",
+          "late_delivery_pct": "21.41",
+          "mean_delivery_days": "24.50",
+          "median_delivery_days": "22",
+          "p90_delivery_days": "39.400000000000006"
+        },
+        {
+          "customer_state": "MA",
+          "eligible_deliveries": "717",
+          "late_orders": "125",
+          "late_delivery_pct": "17.43",
+          "mean_delivery_days": "21.51",
+          "median_delivery_days": "19",
+          "p90_delivery_days": "34"
+        },
+        {
+          "customer_state": "SE",
+          "eligible_deliveries": "335",
+          "late_orders": "51",
+          "late_delivery_pct": "15.22",
+          "mean_delivery_days": "21.46",
+          "median_delivery_days": "18",
+          "p90_delivery_days": "35"
+        },
+        {
+          "customer_state": "PI",
+          "eligible_deliveries": "476",
+          "late_orders": "66",
+          "late_delivery_pct": "13.87",
+          "mean_delivery_days": "19.39",
+          "median_delivery_days": "16",
+          "p90_delivery_days": "30"
+        },
+        {
+          "customer_state": "CE",
+          "eligible_deliveries": "1279",
+          "late_orders": "176",
+          "late_delivery_pct": "13.76",
+          "mean_delivery_days": "21.20",
+          "median_delivery_days": "18",
+          "p90_delivery_days": "35"
+        },
+        {
+          "customer_state": "BA",
+          "eligible_deliveries": "3256",
+          "late_orders": "396",
+          "late_delivery_pct": "12.16",
+          "mean_delivery_days": "19.28",
+          "median_delivery_days": "17",
+          "p90_delivery_days": "32"
+        },
+        {
+          "customer_state": "RJ",
+          "eligible_deliveries": "12350",
+          "late_orders": "1495",
+          "late_delivery_pct": "12.11",
+          "mean_delivery_days": "15.24",
+          "median_delivery_days": "12",
+          "p90_delivery_days": "29"
+        },
+        {
+          "customer_state": "PA",
+          "eligible_deliveries": "946",
+          "late_orders": "106",
+          "late_delivery_pct": "11.21",
+          "mean_delivery_days": "23.73",
+          "median_delivery_days": "21",
+          "p90_delivery_days": "39"
+        },
+        {
+          "customer_state": "ES",
+          "eligible_deliveries": "1995",
+          "late_orders": "214",
+          "late_delivery_pct": "10.73",
+          "mean_delivery_days": "15.72",
+          "median_delivery_days": "14",
+          "p90_delivery_days": "25"
+        },
+        {
+          "customer_state": "PB",
+          "eligible_deliveries": "517",
+          "late_orders": "54",
+          "late_delivery_pct": "10.44",
+          "mean_delivery_days": "20.39",
+          "median_delivery_days": "18",
+          "p90_delivery_days": "35"
+        },
+        {
+          "customer_state": "TO",
+          "eligible_deliveries": "274",
+          "late_orders": "27",
+          "late_delivery_pct": "9.85",
+          "mean_delivery_days": "17.60",
+          "median_delivery_days": "16",
+          "p90_delivery_days": "28"
+        },
+        {
+          "customer_state": "MS",
+          "eligible_deliveries": "701",
+          "late_orders": "68",
+          "late_delivery_pct": "9.70",
+          "mean_delivery_days": "15.54",
+          "median_delivery_days": "14",
+          "p90_delivery_days": "25"
+        },
+        {
+          "customer_state": "PE",
+          "eligible_deliveries": "1593",
+          "late_orders": "153",
+          "late_delivery_pct": "9.60",
+          "mean_delivery_days": "18.40",
+          "median_delivery_days": "16",
+          "p90_delivery_days": "30.800000000000036"
+        },
+        {
+          "customer_state": "RN",
+          "eligible_deliveries": "474",
+          "late_orders": "44",
+          "late_delivery_pct": "9.28",
+          "mean_delivery_days": "19.22",
+          "median_delivery_days": "16",
+          "p90_delivery_days": "32.70000000000001"
+        },
+        {
+          "customer_state": "SC",
+          "eligible_deliveries": "3546",
+          "late_orders": "291",
+          "late_delivery_pct": "8.21",
+          "mean_delivery_days": "14.90",
+          "median_delivery_days": "13",
+          "p90_delivery_days": "26"
+        },
+        {
+          "customer_state": "GO",
+          "eligible_deliveries": "1957",
+          "late_orders": "128",
+          "late_delivery_pct": "6.54",
+          "mean_delivery_days": "15.54",
+          "median_delivery_days": "14",
+          "p90_delivery_days": "25"
+        },
+        {
+          "customer_state": "RS",
+          "eligible_deliveries": "5344",
+          "late_orders": "325",
+          "late_delivery_pct": "6.08",
+          "mean_delivery_days": "15.25",
+          "median_delivery_days": "13",
+          "p90_delivery_days": "26"
+        },
+        {
+          "customer_state": "MT",
+          "eligible_deliveries": "886",
+          "late_orders": "53",
+          "late_delivery_pct": "5.98",
+          "mean_delivery_days": "18.00",
+          "median_delivery_days": "16",
+          "p90_delivery_days": "28"
+        },
+        {
+          "customer_state": "DF",
+          "eligible_deliveries": "2080",
+          "late_orders": "118",
+          "late_delivery_pct": "5.67",
+          "mean_delivery_days": "12.90",
+          "median_delivery_days": "11",
+          "p90_delivery_days": "22"
+        },
+        {
+          "customer_state": "MG",
+          "eligible_deliveries": "11354",
+          "late_orders": "519",
+          "late_delivery_pct": "4.57",
+          "mean_delivery_days": "11.94",
+          "median_delivery_days": "10",
+          "p90_delivery_days": "20"
+        },
+        {
+          "customer_state": "SP",
+          "eligible_deliveries": "40494",
+          "late_orders": "1820",
+          "late_delivery_pct": "4.49",
+          "mean_delivery_days": "8.70",
+          "median_delivery_days": "7",
+          "p90_delivery_days": "16"
+        },
+        {
+          "customer_state": "PR",
+          "eligible_deliveries": "4923",
+          "late_orders": "199",
+          "late_delivery_pct": "4.04",
+          "mean_delivery_days": "11.94",
+          "median_delivery_days": "10",
+          "p90_delivery_days": "20"
+        },
+        {
+          "customer_state": "RO",
+          "eligible_deliveries": "243",
+          "late_orders": "7",
+          "late_delivery_pct": "2.88",
+          "mean_delivery_days": "19.28",
+          "median_delivery_days": "18",
+          "p90_delivery_days": "29"
+        },
+        {
+          "customer_state": "AM",
+          "eligible_deliveries": "145",
+          "late_orders": "4",
+          "late_delivery_pct": "2.76",
+          "mean_delivery_days": "26.36",
+          "median_delivery_days": "26",
+          "p90_delivery_days": "39"
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "question": "How do review scores differ between on-time and late delivered orders?",
+      "sql_sha256": "0909bbbb7a9c01e979a120de8644a526f03b9cf5ff46c59e781b5f67e1f4b6af",
+      "columns": [
+        "delivery_group",
+        "eligible_deliveries",
+        "reviewed_orders",
+        "review_coverage_pct",
+        "average_review_score",
+        "low_review_pct"
+      ],
+      "rows": [
+        {
+          "delivery_group": "on_time",
+          "eligible_deliveries": "89936",
+          "reviewed_orders": "89443",
+          "review_coverage_pct": "99.45",
+          "average_review_score": "4.29",
+          "low_review_pct": "9.27"
+        },
+        {
+          "delivery_group": "late",
+          "eligible_deliveries": "6534",
+          "reviewed_orders": "6381",
+          "review_coverage_pct": "97.66",
+          "average_review_score": "2.27",
+          "low_review_pct": "62.42"
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "question": "What share of recorded payment value uses each method?",
+      "sql_sha256": "f3690fabdcf589fb30ff15a784f5b93792adccecfb1a616b6275e1cba7364591",
+      "columns": [
+        "payment_type",
+        "payment_records",
+        "orders_using_method",
+        "recorded_payment_value",
+        "payment_value_share_pct",
+        "mean_installments_per_payment_record"
+      ],
+      "rows": [
+        {
+          "payment_type": "credit_card",
+          "payment_records": "76795",
+          "orders_using_method": "76505",
+          "recorded_payment_value": "12542084.19",
+          "payment_value_share_pct": "78.34",
+          "mean_installments_per_payment_record": "3.51"
+        },
+        {
+          "payment_type": "boleto",
+          "payment_records": "19784",
+          "orders_using_method": "19784",
+          "recorded_payment_value": "2869361.27",
+          "payment_value_share_pct": "17.92",
+          "mean_installments_per_payment_record": "1.00"
+        },
+        {
+          "payment_type": "voucher",
+          "payment_records": "5775",
+          "orders_using_method": "3866",
+          "recorded_payment_value": "379436.87",
+          "payment_value_share_pct": "2.37",
+          "mean_installments_per_payment_record": "1.00"
+        },
+        {
+          "payment_type": "debit_card",
+          "payment_records": "1529",
+          "orders_using_method": "1528",
+          "recorded_payment_value": "217989.79",
+          "payment_value_share_pct": "1.36",
+          "mean_installments_per_payment_record": "1.00"
+        },
+        {
+          "payment_type": "not_defined",
+          "payment_records": "3",
+          "orders_using_method": "3",
+          "recorded_payment_value": "0.00",
+          "payment_value_share_pct": "0.00",
+          "mean_installments_per_payment_record": "1.00"
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "question": "How many customers have multiple delivered orders during the observed period?",
+      "sql_sha256": "8538d04ab77145b1e43bb7cdd7131f349846c33a470d72f7231cfee063967158",
+      "columns": [
+        "customer_group",
+        "unique_customers",
+        "delivered_orders",
+        "delivered_item_gmv",
+        "customer_share_pct"
+      ],
+      "rows": [
+        {
+          "customer_group": "one_delivered_order",
+          "unique_customers": "90557",
+          "delivered_orders": "90557",
+          "delivered_item_gmv": "12493089.36",
+          "customer_share_pct": "97.00"
+        },
+        {
+          "customer_group": "two_or_more_delivered_orders",
+          "unique_customers": "2801",
+          "delivered_orders": "5921",
+          "delivered_item_gmv": "728408.75",
+          "customer_share_pct": "3.00"
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "question": "How many customers return in each month after their first delivered purchase?",
+      "sql_sha256": "ca95c9b8759ce4f53f8ded512adb9b8f8b2abaa5908354b39fd4e10b8668e3dd",
+      "columns": [
+        "cohort_month",
+        "cohort_customers",
+        "month_0_pct",
+        "month_1_pct",
+        "month_2_pct",
+        "month_3_pct",
+        "month_4_pct",
+        "month_5_pct"
+      ],
+      "rows": [
+        {
+          "cohort_month": "2016-09-01",
+          "cohort_customers": "1",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.00",
+          "month_2_pct": "0.00",
+          "month_3_pct": "0.00",
+          "month_4_pct": "0.00",
+          "month_5_pct": "0.00"
+        },
+        {
+          "cohort_month": "2016-10-01",
+          "cohort_customers": "262",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.00",
+          "month_2_pct": "0.00",
+          "month_3_pct": "0.00",
+          "month_4_pct": "0.00",
+          "month_5_pct": "0.00"
+        },
+        {
+          "cohort_month": "2016-12-01",
+          "cohort_customers": "1",
+          "month_0_pct": "100.00",
+          "month_1_pct": "100.00",
+          "month_2_pct": "0.00",
+          "month_3_pct": "0.00",
+          "month_4_pct": "0.00",
+          "month_5_pct": "0.00"
+        },
+        {
+          "cohort_month": "2017-01-01",
+          "cohort_customers": "717",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.28",
+          "month_2_pct": "0.28",
+          "month_3_pct": "0.14",
+          "month_4_pct": "0.42",
+          "month_5_pct": "0.14"
+        },
+        {
+          "cohort_month": "2017-02-01",
+          "cohort_customers": "1628",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.18",
+          "month_2_pct": "0.31",
+          "month_3_pct": "0.12",
+          "month_4_pct": "0.43",
+          "month_5_pct": "0.12"
+        },
+        {
+          "cohort_month": "2017-03-01",
+          "cohort_customers": "2503",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.44",
+          "month_2_pct": "0.36",
+          "month_3_pct": "0.40",
+          "month_4_pct": "0.36",
+          "month_5_pct": "0.16"
+        },
+        {
+          "cohort_month": "2017-04-01",
+          "cohort_customers": "2256",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.62",
+          "month_2_pct": "0.22",
+          "month_3_pct": "0.18",
+          "month_4_pct": "0.27",
+          "month_5_pct": "0.27"
+        },
+        {
+          "cohort_month": "2017-05-01",
+          "cohort_customers": "3451",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.46",
+          "month_2_pct": "0.46",
+          "month_3_pct": "0.29",
+          "month_4_pct": "0.29",
+          "month_5_pct": "0.32"
+        },
+        {
+          "cohort_month": "2017-06-01",
+          "cohort_customers": "3037",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.49",
+          "month_2_pct": "0.40",
+          "month_3_pct": "0.43",
+          "month_4_pct": "0.30",
+          "month_5_pct": "0.40"
+        },
+        {
+          "cohort_month": "2017-07-01",
+          "cohort_customers": "3752",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.53",
+          "month_2_pct": "0.35",
+          "month_3_pct": "0.24",
+          "month_4_pct": "0.29",
+          "month_5_pct": "0.21"
+        },
+        {
+          "cohort_month": "2017-08-01",
+          "cohort_customers": "4057",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.69",
+          "month_2_pct": "0.35",
+          "month_3_pct": "0.27",
+          "month_4_pct": "0.35",
+          "month_5_pct": "0.52"
+        },
+        {
+          "cohort_month": "2017-09-01",
+          "cohort_customers": "4004",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.70",
+          "month_2_pct": "0.55",
+          "month_3_pct": "0.27",
+          "month_4_pct": "0.45",
+          "month_5_pct": "0.22"
+        },
+        {
+          "cohort_month": "2017-10-01",
+          "cohort_customers": "4328",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.72",
+          "month_2_pct": "0.25",
+          "month_3_pct": "0.09",
+          "month_4_pct": "0.23",
+          "month_5_pct": "0.21"
+        },
+        {
+          "cohort_month": "2017-11-01",
+          "cohort_customers": "7060",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.57",
+          "month_2_pct": "0.37",
+          "month_3_pct": "0.17",
+          "month_4_pct": "0.17",
+          "month_5_pct": "0.18"
+        },
+        {
+          "cohort_month": "2017-12-01",
+          "cohort_customers": "5338",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.21",
+          "month_2_pct": "0.28",
+          "month_3_pct": "0.34",
+          "month_4_pct": "0.26",
+          "month_5_pct": "0.21"
+        },
+        {
+          "cohort_month": "2018-01-01",
+          "cohort_customers": "6842",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.34",
+          "month_2_pct": "0.37",
+          "month_3_pct": "0.29",
+          "month_4_pct": "0.29",
+          "month_5_pct": "0.16"
+        },
+        {
+          "cohort_month": "2018-02-01",
+          "cohort_customers": "6288",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.35",
+          "month_2_pct": "0.40",
+          "month_3_pct": "0.30",
+          "month_4_pct": "0.25",
+          "month_5_pct": "0.22"
+        },
+        {
+          "cohort_month": "2018-03-01",
+          "cohort_customers": "6774",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.40",
+          "month_2_pct": "0.30",
+          "month_3_pct": "0.30",
+          "month_4_pct": "0.12",
+          "month_5_pct": "0.12"
+        },
+        {
+          "cohort_month": "2018-04-01",
+          "cohort_customers": "6582",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.59",
+          "month_2_pct": "0.30",
+          "month_3_pct": "0.24",
+          "month_4_pct": "0.14",
+          "month_5_pct": ""
+        },
+        {
+          "cohort_month": "2018-05-01",
+          "cohort_customers": "6506",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.52",
+          "month_2_pct": "0.26",
+          "month_3_pct": "0.18",
+          "month_4_pct": "",
+          "month_5_pct": ""
+        },
+        {
+          "cohort_month": "2018-06-01",
+          "cohort_customers": "5878",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.43",
+          "month_2_pct": "0.27",
+          "month_3_pct": "",
+          "month_4_pct": "",
+          "month_5_pct": ""
+        },
+        {
+          "cohort_month": "2018-07-01",
+          "cohort_customers": "5949",
+          "month_0_pct": "100.00",
+          "month_1_pct": "0.52",
+          "month_2_pct": "",
+          "month_3_pct": "",
+          "month_4_pct": "",
+          "month_5_pct": ""
+        },
+        {
+          "cohort_month": "2018-08-01",
+          "cohort_customers": "6144",
+          "month_0_pct": "100.00",
+          "month_1_pct": "",
+          "month_2_pct": "",
+          "month_3_pct": "",
+          "month_4_pct": "",
+          "month_5_pct": ""
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "question": "How much delivered merchandise value comes from the largest sellers?",
+      "sql_sha256": "3436b993df19466e7266a3e2fd18e8077a4c78c23548f68f034bd52d7f4e1459",
+      "columns": [
+        "seller_rank",
+        "seller_id",
+        "seller_state",
+        "delivered_orders",
+        "delivered_item_gmv",
+        "gmv_share_pct",
+        "cumulative_gmv_share_pct"
+      ],
+      "rows": [
+        {
+          "seller_rank": "1",
+          "seller_id": "4869f7a5dfa277a7dca6462dcf3b52b2",
+          "seller_state": "SP",
+          "delivered_orders": "1124",
+          "delivered_item_gmv": "226987.93",
+          "gmv_share_pct": "1.72",
+          "cumulative_gmv_share_pct": "1.72"
+        },
+        {
+          "seller_rank": "2",
+          "seller_id": "53243585a1d6dc2643021fd1853d8905",
+          "seller_state": "BA",
+          "delivered_orders": "348",
+          "delivered_item_gmv": "217940.44",
+          "gmv_share_pct": "1.65",
+          "cumulative_gmv_share_pct": "3.37"
+        },
+        {
+          "seller_rank": "3",
+          "seller_id": "4a3ca9315b744ce9f8e9374361493884",
+          "seller_state": "SP",
+          "delivered_orders": "1772",
+          "delivered_item_gmv": "196882.12",
+          "gmv_share_pct": "1.49",
+          "cumulative_gmv_share_pct": "4.85"
+        },
+        {
+          "seller_rank": "4",
+          "seller_id": "fa1c13f2614d7b5c4749cbc52fecda94",
+          "seller_state": "SP",
+          "delivered_orders": "578",
+          "delivered_item_gmv": "190917.14",
+          "gmv_share_pct": "1.44",
+          "cumulative_gmv_share_pct": "6.30"
+        },
+        {
+          "seller_rank": "5",
+          "seller_id": "7c67e1448b00f6e969d365cea6b010ab",
+          "seller_state": "SP",
+          "delivered_orders": "973",
+          "delivered_item_gmv": "186570.05",
+          "gmv_share_pct": "1.41",
+          "cumulative_gmv_share_pct": "7.71"
+        },
+        {
+          "seller_rank": "6",
+          "seller_id": "7e93a43ef30c4f03f38b393420bc753a",
+          "seller_state": "SP",
+          "delivered_orders": "319",
+          "delivered_item_gmv": "165981.49",
+          "gmv_share_pct": "1.26",
+          "cumulative_gmv_share_pct": "8.96"
+        },
+        {
+          "seller_rank": "7",
+          "seller_id": "da8622b14eb17ae2831f4ac5b9dab84a",
+          "seller_state": "SP",
+          "delivered_orders": "1311",
+          "delivered_item_gmv": "159816.87",
+          "gmv_share_pct": "1.21",
+          "cumulative_gmv_share_pct": "10.17"
+        },
+        {
+          "seller_rank": "8",
+          "seller_id": "7a67c85e85bb2ce8582c35f2203ad736",
+          "seller_state": "SP",
+          "delivered_orders": "1145",
+          "delivered_item_gmv": "139658.69",
+          "gmv_share_pct": "1.06",
+          "cumulative_gmv_share_pct": "11.23"
+        },
+        {
+          "seller_rank": "9",
+          "seller_id": "1025f0e2d44d7041d6cf58b6550e0bfa",
+          "seller_state": "SP",
+          "delivered_orders": "910",
+          "delivered_item_gmv": "138208.56",
+          "gmv_share_pct": "1.05",
+          "cumulative_gmv_share_pct": "12.28"
+        },
+        {
+          "seller_rank": "10",
+          "seller_id": "955fee9216a65b617aa5c0531780ce60",
+          "seller_state": "SP",
+          "delivered_orders": "1261",
+          "delivered_item_gmv": "131836.71",
+          "gmv_share_pct": "1.00",
+          "cumulative_gmv_share_pct": "13.27"
+        }
+      ]
+    },
+    {
+      "id": "Q12",
+      "question": "How does freight compare with merchandise value across categories?",
+      "sql_sha256": "71178902c3ca13affe1246a0031f580dd83dbd9092738a519436987fe269963e",
+      "columns": [
+        "category",
+        "items",
+        "delivered_item_gmv",
+        "recorded_freight",
+        "freight_to_gmv_pct"
+      ],
+      "rows": [
+        {
+          "category": "christmas_supplies",
+          "items": "150",
+          "delivered_item_gmv": "8737.84",
+          "recorded_freight": "3190.91",
+          "freight_to_gmv_pct": "36.52"
+        },
+        {
+          "category": "signaling_and_security",
+          "items": "197",
+          "delivered_item_gmv": "21315.05",
+          "recorded_freight": "6477.54",
+          "freight_to_gmv_pct": "30.39"
+        },
+        {
+          "category": "electronics",
+          "items": "2729",
+          "delivered_item_gmv": "155043.93",
+          "recorded_freight": "45679.16",
+          "freight_to_gmv_pct": "29.46"
+        },
+        {
+          "category": "food_drink",
+          "items": "269",
+          "delivered_item_gmv": "14942.88",
+          "recorded_freight": "4394.89",
+          "freight_to_gmv_pct": "29.41"
+        },
+        {
+          "category": "furniture_living_room",
+          "items": "495",
+          "delivered_item_gmv": "67350.70",
+          "recorded_freight": "17694.37",
+          "freight_to_gmv_pct": "26.27"
+        },
+        {
+          "category": "kitchen_dining_laundry_garden_furniture",
+          "items": "274",
+          "delivered_item_gmv": "45531.98",
+          "recorded_freight": "11540.99",
+          "freight_to_gmv_pct": "25.35"
+        },
+        {
+          "category": "drinks",
+          "items": "361",
+          "delivered_item_gmv": "21529.84",
+          "recorded_freight": "5441.27",
+          "freight_to_gmv_pct": "25.27"
+        },
+        {
+          "category": "office_furniture",
+          "items": "1668",
+          "delivered_item_gmv": "268154.31",
+          "recorded_freight": "67057.05",
+          "freight_to_gmv_pct": "25.01"
+        },
+        {
+          "category": "food",
+          "items": "499",
+          "delivered_item_gmv": "28731.15",
+          "recorded_freight": "7063.53",
+          "freight_to_gmv_pct": "24.58"
+        },
+        {
+          "category": "furniture_decor",
+          "items": "8160",
+          "delivered_item_gmv": "711927.69",
+          "recorded_freight": "168402.23",
+          "freight_to_gmv_pct": "23.65"
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "question": "Which categories show the strongest merchandise value in each customer state?",
+      "sql_sha256": "d2579fd5b664a8bb893a977e5f9518a6cd3cb28565fb2c2cf824a6dff4570098",
+      "columns": [
+        "customer_state",
+        "category",
+        "delivered_item_gmv",
+        "category_rank"
+      ],
+      "rows": [
+        {
+          "customer_state": "AC",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "1677.46",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "AC",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "1389.60",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "AC",
+          "category": "health_beauty",
+          "delivered_item_gmv": "1386.58",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "AL",
+          "category": "health_beauty",
+          "delivered_item_gmv": "12681.26",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "AL",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "11605.02",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "AL",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "7605.61",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "AM",
+          "category": "health_beauty",
+          "delivered_item_gmv": "2776.03",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "AM",
+          "category": "garden_tools",
+          "delivered_item_gmv": "1980.88",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "AM",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "1815.74",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "AP",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "2050.03",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "AP",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "1639.80",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "AP",
+          "category": "computers",
+          "delivered_item_gmv": "1437.00",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "BA",
+          "category": "health_beauty",
+          "delivered_item_gmv": "49955.12",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "BA",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "45631.52",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "BA",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "37010.06",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "CE",
+          "category": "health_beauty",
+          "delivered_item_gmv": "31544.50",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "CE",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "29025.35",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "CE",
+          "category": "cool_stuff",
+          "delivered_item_gmv": "12005.41",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "DF",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "32292.27",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "DF",
+          "category": "health_beauty",
+          "delivered_item_gmv": "29542.82",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "DF",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "23853.44",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "ES",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "28074.00",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "ES",
+          "category": "bed_bath_table",
+          "delivered_item_gmv": "22589.65",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "ES",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "20086.20",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "GO",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "31486.93",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "GO",
+          "category": "health_beauty",
+          "delivered_item_gmv": "27971.30",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "GO",
+          "category": "bed_bath_table",
+          "delivered_item_gmv": "22285.61",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "MA",
+          "category": "health_beauty",
+          "delivered_item_gmv": "12668.28",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "MA",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "12152.83",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "MA",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "9712.99",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "MG",
+          "category": "health_beauty",
+          "delivered_item_gmv": "154324.15",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "MG",
+          "category": "bed_bath_table",
+          "delivered_item_gmv": "128760.49",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "MG",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "121622.03",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "MS",
+          "category": "health_beauty",
+          "delivered_item_gmv": "11231.58",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "MS",
+          "category": "housewares",
+          "delivered_item_gmv": "10861.74",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "MS",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "9738.80",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "MT",
+          "category": "health_beauty",
+          "delivered_item_gmv": "15241.80",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "MT",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "15006.91",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "MT",
+          "category": "auto",
+          "delivered_item_gmv": "10087.42",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "PA",
+          "category": "health_beauty",
+          "delivered_item_gmv": "23545.84",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "PA",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "21635.82",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "PA",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "12298.65",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "PB",
+          "category": "health_beauty",
+          "delivered_item_gmv": "15692.08",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "PB",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "13102.98",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "PB",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "7195.08",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "PE",
+          "category": "health_beauty",
+          "delivered_item_gmv": "40685.01",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "PE",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "30894.88",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "PE",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "18245.51",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "PI",
+          "category": "health_beauty",
+          "delivered_item_gmv": "10205.20",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "PI",
+          "category": "auto",
+          "delivered_item_gmv": "10017.38",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "PI",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "7736.18",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "PR",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "57653.30",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "PR",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "57287.20",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "PR",
+          "category": "health_beauty",
+          "delivered_item_gmv": "53730.23",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "RJ",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "174895.01",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "RJ",
+          "category": "bed_bath_table",
+          "delivered_item_gmv": "144251.79",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "RJ",
+          "category": "health_beauty",
+          "delivered_item_gmv": "140236.35",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "RN",
+          "category": "health_beauty",
+          "delivered_item_gmv": "13728.98",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "RN",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "10052.42",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "RN",
+          "category": "telephony",
+          "delivered_item_gmv": "5303.29",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "RO",
+          "category": "health_beauty",
+          "delivered_item_gmv": "7085.76",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "RO",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "4428.27",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "RO",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "3212.88",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "RR",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "1350.60",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "RR",
+          "category": "home_appliances",
+          "delivered_item_gmv": "954.18",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "RR",
+          "category": "baby",
+          "delivered_item_gmv": "949.90",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "RS",
+          "category": "bed_bath_table",
+          "delivered_item_gmv": "60040.95",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "RS",
+          "category": "furniture_decor",
+          "delivered_item_gmv": "53774.90",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "RS",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "52380.04",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "SC",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "41579.03",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "SC",
+          "category": "health_beauty",
+          "delivered_item_gmv": "39260.73",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "SC",
+          "category": "computers_accessories",
+          "delivered_item_gmv": "36058.43",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "SE",
+          "category": "health_beauty",
+          "delivered_item_gmv": "8396.67",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "SE",
+          "category": "cool_stuff",
+          "delivered_item_gmv": "5686.67",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "SE",
+          "category": "furniture_decor",
+          "delivered_item_gmv": "4231.39",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "SP",
+          "category": "bed_bath_table",
+          "delivered_item_gmv": "472238.07",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "SP",
+          "category": "health_beauty",
+          "delivered_item_gmv": "453916.48",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "SP",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "421546.60",
+          "category_rank": "3"
+        },
+        {
+          "customer_state": "TO",
+          "category": "sports_leisure",
+          "delivered_item_gmv": "5144.32",
+          "category_rank": "1"
+        },
+        {
+          "customer_state": "TO",
+          "category": "watches_gifts",
+          "delivered_item_gmv": "4920.89",
+          "category_rank": "2"
+        },
+        {
+          "customer_state": "TO",
+          "category": "health_beauty",
+          "delivered_item_gmv": "4798.99",
+          "category_rank": "3"
+        }
+      ]
+    },
+    {
+      "id": "Q14",
+      "question": "How do recorded payments compare with item value plus freight per order?",
+      "sql_sha256": "c8c16a0aaf68a2332c95bce3b4ae92281dc4bbaa3e04f81a38cae7cfbd2aad9b",
+      "columns": [
+        "orders",
+        "orders_with_items",
+        "orders_with_payments",
+        "comparable_orders",
+        "differences_above_one_cent",
+        "net_recorded_difference"
+      ],
+      "rows": [
+        {
+          "orders": "99441",
+          "orders_with_items": "98666",
+          "orders_with_payments": "99440",
+          "comparable_orders": "98665",
+          "differences_above_one_cent": "303",
+          "net_recorded_difference": "2870.39"
+        }
+      ]
+    },
+    {
+      "id": "Q15",
+      "question": "What descriptive customer groups emerge from frequency and recency?",
+      "sql_sha256": "25c89688e37571557477e77ba33abb57785b82d095d356bdea1d2460f768b501",
+      "columns": [
+        "segment",
+        "as_of_date",
+        "unique_customers",
+        "mean_recency_days",
+        "delivered_orders",
+        "delivered_item_gmv"
+      ],
+      "rows": [
+        {
+          "segment": "single_purchase_older",
+          "as_of_date": "2018-08-30",
+          "unique_customers": "72778",
+          "mean_recency_days": "286.4",
+          "delivered_orders": "72778",
+          "delivered_item_gmv": "10035714.16"
+        },
+        {
+          "segment": "single_purchase_recent",
+          "as_of_date": "2018-08-30",
+          "unique_customers": "17779",
+          "mean_recency_days": "45.2",
+          "delivered_orders": "17779",
+          "delivered_item_gmv": "2457375.20"
+        },
+        {
+          "segment": "repeat_purchase_older",
+          "as_of_date": "2018-08-30",
+          "unique_customers": "2190",
+          "mean_recency_days": "269.5",
+          "delivered_orders": "4599",
+          "delivered_item_gmv": "563538.66"
+        },
+        {
+          "segment": "repeat_purchase_recent",
+          "as_of_date": "2018-08-30",
+          "unique_customers": "611",
+          "mean_recency_days": "46.2",
+          "delivered_orders": "1322",
+          "delivered_item_gmv": "164870.09"
+        }
+      ]
+    }
+  ]
+}

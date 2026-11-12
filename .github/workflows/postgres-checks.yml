@@ -1,0 +1,39 @@
+name: PostgreSQL checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: olist_test
+          POSTGRES_USER: analyst
+          POSTGRES_PASSWORD: ci_only_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U analyst -d olist_test"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: analyst
+      PGPASSWORD: ci_only_password
+      PGDATABASE: olist_test
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Exercise relationships and metric boundaries
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/run_fixture.sql
+      - name: Exercise repeatable setup
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/run_fixture.sql
+      - name: Execute all business queries and quality diagnostics
+        run: |
+          psql -X -v ON_ERROR_STOP=1 -f sql/03_analysis.sql
+          psql -X -v ON_ERROR_STOP=1 -f sql/04_data_quality.sql
+      - name: Check Python syntax
+        run: python3 -m compileall -q scripts
